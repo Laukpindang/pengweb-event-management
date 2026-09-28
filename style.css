@@ -1,0 +1,163 @@
+* {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Open Sans',
+    'Helvetica Neue',
+    sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  padding: 0 20px;
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.148 0.004 228.8);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.148 0.004 228.8);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.148 0.004 228.8);
+  --primary: oklch(0.518 0.253 323.949);
+  --primary-foreground: oklch(0.977 0.017 320.058);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.963 0.002 197.1);
+  --muted-foreground: oklch(0.56 0.021 213.5);
+  --accent: oklch(0.963 0.002 197.1);
+  --accent-foreground: oklch(0.218 0.008 223.9);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.925 0.005 214.3);
+  --input: oklch(0.925 0.005 214.3);
+  --ring: oklch(0.723 0.014 214.4);
+  --radius: 0.625rem;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+button {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  border-width: 1px;
+  border-color: transparent;
+  background-clip: padding-box;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  outline-style: none;
+  user-select: none;
+  height: 24px;
+  gap: 6px;
+  padding: 0 10px;
+}
+
+ul {
+  list-style: none;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  padding-inline-start: 0;
+}
+
+button:hover {
+  background-color: color-mix(in oklab, var(--primary) 80%, transparent);
+}
+
+button:focus-visible {
+  border-color: var(--ring);
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.welcome-text {
+  font-size: 24px;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 4px;
+  width: 100%;
+}
+
+.text-lg {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list li {
+  color: var(--primary);
+}
+
+.stat-list {
+  margin: 20px 0;
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.team-sum {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.card {
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid;
+}
+
+@media (width >= 48rem /* 768px */) {
+  .form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .form > button {
+    grid-column: 2;
+  }
+
+  .form > p {
+    grid-column: span 2;
+  }
+
+  .stat-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .team-sum {
+    grid-column: span 4;
+  }
+}

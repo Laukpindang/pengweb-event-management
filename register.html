@@ -4,14 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="App for managing team, event, task, and see it's completion progress">
+  <link rel="stylesheet" href="style.css">
   <title>Team & Event Management</title>
 </head>
 <body>
   <header>
-    <h1>Selamat datang!</h1>
+    <h1 class="welcome-text">Selamat datang!</h1>
   </header>
-  <main>
-    <form action="./dashboard.html">
+  <main class="form-container">
+    <form action="./dashboard.html" class="form">
       <label for="name">Nama</label>
       <input type="text" id="name" name="name">
       <label for="email">Email</label>
@@ -19,7 +20,6 @@
       <label for="password">Password</label>
       <input type="password" id="password" name="password">
       <button type="submit">Buat akun</button>
-      <br>
       <p>Sudah punya akun? <a href="./login.html">masuk!</a></p>
     </form>
   </main>
