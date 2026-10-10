@@ -4,37 +4,53 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="App for managing team, event, task, and see it's completion progress">
-    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <title>Team & Event Management</title>
   </head>
   <body>
-    <header><h1 class="text-lg">Dashboard</h1></header>
     <nav>
-      <ul class="list">
-        <li>Dashboard</li>
-        <li>Anggota</li>
-        <li>Event</li>
-        <li>Tugas</li>
+      <ul class="flex justify-between items-center px-2 pt-2">
+        <li>
+          <a href="./dashboard.html">
+            Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            Anggota
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            Event
+          </a>
+        </li>
+        <li>
+          <a href="./task.html">
+            Tugas
+          </a>
+        </li>
       </ul>
     </nav>
-    <main class="stat-list">
-      <div class="team-sum">
+    <header><h1 class="text-lg p-2">Dashboard</h1></header>
+    <main class="my-4 grid grid-cols-1 md:grid-cols-2 gap-1">
+      <div class="flex justify-between items-center flex-wrap md:col-span-2">
         <h1 class="text-lg">Nama Tim</h1>
         <p>5 Anggota</p>
       </div>
-      <div class="card">
+      <div class="p-4 border rounded">
         <p>Tugas selesai</p>
         <p>5</p>
       </div>
-      <div class="card">
+      <div class="p-4 border rounded">
         <p>Tugas belum selesai</p>
         <p>4</p>
       </div>
-      <div class="card">
+      <div class="p-4 border rounded">
         <p>Tugas belum di assign</p>
         <p>3</p>
       </div>
-      <div class="card">
+      <div class="p-4 border rounded">
         <p>Total tugas</p>
         <p>12</p>
       </div>
