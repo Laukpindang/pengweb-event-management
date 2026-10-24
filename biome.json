@@ -1,0 +1,41 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.4.5/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"ignoreUnknown": true,
+		"includes": [
+			"**/src/**/*",
+			"**/.vscode/**/*",
+			"**/index.html",
+			"**/vite.config.ts",
+			"!**/src/routeTree.gen.ts",
+			"!node_modules",
+			"prisma/seed.ts"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"lineEnding": "lf"
+	},
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single",
+			"trailingCommas": "none",
+			"semicolons": "asNeeded",
+			"lineEnding": "lf"
+		}
+	},
+	"css": { "parser": { "tailwindDirectives": true } }
+}
