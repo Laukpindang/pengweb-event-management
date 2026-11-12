@@ -21,6 +21,7 @@ const navMenu = [
 	{ title: 'Dashboard', to: '/team/$id' },
 	{ title: 'Member', to: '/team/$id/member' },
 	{ title: 'Event', to: '/team/$id/event' },
+	{ title: 'Tasks', to: '/team/$id/task' },
 	{ title: 'My Task', to: '/team/$id/my-task' }
 ] as const satisfies Array<{
 	title: string

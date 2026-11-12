@@ -23,6 +23,8 @@ import { Route as AuthedTeamIdEventIndexRouteImport } from './routes/_authed/tea
 import { Route as AuthedTeamIdEventNewRouteImport } from './routes/_authed/team.$id/event/new'
 import { Route as AuthedTeamIdMemberIndexRouteImport } from './routes/_authed/team.$id/member/index'
 import { Route as AuthedTeamIdMemberAddRouteImport } from './routes/_authed/team.$id/member/add'
+import { Route as AuthedTeamIdTaskIndexRouteImport } from './routes/_authed/team.$id/task/index'
+import { Route as AuthedTeamIdTaskNewRouteImport } from './routes/_authed/team.$id/task/new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -93,6 +95,16 @@ const AuthedTeamIdMemberAddRoute = AuthedTeamIdMemberAddRouteImport.update({
   path: '/$id/member/add',
   getParentRoute: () => AuthedTeamRoute,
 } as any)
+const AuthedTeamIdTaskIndexRoute = AuthedTeamIdTaskIndexRouteImport.update({
+  id: '/$id/task/',
+  path: '/$id/task/',
+  getParentRoute: () => AuthedTeamRoute,
+} as any)
+const AuthedTeamIdTaskNewRoute = AuthedTeamIdTaskNewRouteImport.update({
+  id: '/$id/task/new',
+  path: '/$id/task/new',
+  getParentRoute: () => AuthedTeamRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -106,8 +118,10 @@ export interface FileRoutesByFullPath {
   '/team/$id/': typeof AuthedTeamIdIndexRoute
   '/team/$id/event/new': typeof AuthedTeamIdEventNewRoute
   '/team/$id/member/add': typeof AuthedTeamIdMemberAddRoute
+  '/team/$id/task/new': typeof AuthedTeamIdTaskNewRoute
   '/team/$id/event/': typeof AuthedTeamIdEventIndexRoute
   '/team/$id/member/': typeof AuthedTeamIdMemberIndexRoute
+  '/team/$id/task/': typeof AuthedTeamIdTaskIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -121,8 +135,10 @@ export interface FileRoutesByTo {
   '/team/$id': typeof AuthedTeamIdIndexRoute
   '/team/$id/event/new': typeof AuthedTeamIdEventNewRoute
   '/team/$id/member/add': typeof AuthedTeamIdMemberAddRoute
+  '/team/$id/task/new': typeof AuthedTeamIdTaskNewRoute
   '/team/$id/event': typeof AuthedTeamIdEventIndexRoute
   '/team/$id/member': typeof AuthedTeamIdMemberIndexRoute
+  '/team/$id/task': typeof AuthedTeamIdTaskIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -138,8 +154,10 @@ export interface FileRoutesById {
   '/_authed/team/$id/': typeof AuthedTeamIdIndexRoute
   '/_authed/team/$id/event/new': typeof AuthedTeamIdEventNewRoute
   '/_authed/team/$id/member/add': typeof AuthedTeamIdMemberAddRoute
+  '/_authed/team/$id/task/new': typeof AuthedTeamIdTaskNewRoute
   '/_authed/team/$id/event/': typeof AuthedTeamIdEventIndexRoute
   '/_authed/team/$id/member/': typeof AuthedTeamIdMemberIndexRoute
+  '/_authed/team/$id/task/': typeof AuthedTeamIdTaskIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -155,8 +173,10 @@ export interface FileRouteTypes {
     | '/team/$id/'
     | '/team/$id/event/new'
     | '/team/$id/member/add'
+    | '/team/$id/task/new'
     | '/team/$id/event/'
     | '/team/$id/member/'
+    | '/team/$id/task/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -170,8 +190,10 @@ export interface FileRouteTypes {
     | '/team/$id'
     | '/team/$id/event/new'
     | '/team/$id/member/add'
+    | '/team/$id/task/new'
     | '/team/$id/event'
     | '/team/$id/member'
+    | '/team/$id/task'
   id:
     | '__root__'
     | '/'
@@ -186,8 +208,10 @@ export interface FileRouteTypes {
     | '/_authed/team/$id/'
     | '/_authed/team/$id/event/new'
     | '/_authed/team/$id/member/add'
+    | '/_authed/team/$id/task/new'
     | '/_authed/team/$id/event/'
     | '/_authed/team/$id/member/'
+    | '/_authed/team/$id/task/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -297,6 +321,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedTeamIdMemberAddRouteImport
       parentRoute: typeof AuthedTeamRoute
     }
+    '/_authed/team/$id/task/': {
+      id: '/_authed/team/$id/task/'
+      path: '/$id/task'
+      fullPath: '/team/$id/task/'
+      preLoaderRoute: typeof AuthedTeamIdTaskIndexRouteImport
+      parentRoute: typeof AuthedTeamRoute
+    }
+    '/_authed/team/$id/task/new': {
+      id: '/_authed/team/$id/task/new'
+      path: '/$id/task/new'
+      fullPath: '/team/$id/task/new'
+      preLoaderRoute: typeof AuthedTeamIdTaskNewRouteImport
+      parentRoute: typeof AuthedTeamRoute
+    }
   }
 }
 
@@ -305,8 +343,10 @@ interface AuthedTeamRouteChildren {
   AuthedTeamIdIndexRoute: typeof AuthedTeamIdIndexRoute
   AuthedTeamIdEventNewRoute: typeof AuthedTeamIdEventNewRoute
   AuthedTeamIdMemberAddRoute: typeof AuthedTeamIdMemberAddRoute
+  AuthedTeamIdTaskNewRoute: typeof AuthedTeamIdTaskNewRoute
   AuthedTeamIdEventIndexRoute: typeof AuthedTeamIdEventIndexRoute
   AuthedTeamIdMemberIndexRoute: typeof AuthedTeamIdMemberIndexRoute
+  AuthedTeamIdTaskIndexRoute: typeof AuthedTeamIdTaskIndexRoute
 }
 
 const AuthedTeamRouteChildren: AuthedTeamRouteChildren = {
@@ -314,8 +354,10 @@ const AuthedTeamRouteChildren: AuthedTeamRouteChildren = {
   AuthedTeamIdIndexRoute: AuthedTeamIdIndexRoute,
   AuthedTeamIdEventNewRoute: AuthedTeamIdEventNewRoute,
   AuthedTeamIdMemberAddRoute: AuthedTeamIdMemberAddRoute,
+  AuthedTeamIdTaskNewRoute: AuthedTeamIdTaskNewRoute,
   AuthedTeamIdEventIndexRoute: AuthedTeamIdEventIndexRoute,
   AuthedTeamIdMemberIndexRoute: AuthedTeamIdMemberIndexRoute,
+  AuthedTeamIdTaskIndexRoute: AuthedTeamIdTaskIndexRoute,
 }
 
 const AuthedTeamRouteWithChildren = AuthedTeamRoute._addFileChildren(
