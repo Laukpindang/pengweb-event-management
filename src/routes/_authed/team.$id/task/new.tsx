@@ -1,8 +1,9 @@
 import { useForm } from '@tanstack/react-form'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import axios, { AxiosError } from 'axios'
+
 import { ArrowLeftIcon } from 'lucide-react'
-import z from 'zod'
+
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
 	Field,
@@ -13,14 +14,10 @@ import {
 import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/toast'
 
+import { CreateTaskSchema } from '@/schemas/tasks'
+
 export const Route = createFileRoute('/_authed/team/$id/task/new')({
 	component: RouteComponent
-})
-
-const CreateTaskSchema = z.object({
-	title: z.string().min(5).max(50),
-	description: z.string().min(10).max(100),
-	due_date: z.iso.date()
 })
 
 function RouteComponent() {

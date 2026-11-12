@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import axios from 'axios'
-import { PlusIcon } from 'lucide-react'
+import { PencilIcon, PlusIcon } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import {
 	Table,
@@ -46,6 +46,7 @@ function RouteComponent() {
 						<TableHead>Description</TableHead>
 						<TableHead>Due Date</TableHead>
 						<TableHead>Status</TableHead>
+						<TableHead>Action</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -55,6 +56,15 @@ function RouteComponent() {
 							<TableCell>{task.description}</TableCell>
 							<TableCell>{new Date(task.due_date).toDateString()}</TableCell>
 							<TableCell>{task.status}</TableCell>
+							<TableCell>
+								<Link
+									to="/team/$id/task/$taskId/edit"
+									params={{ id, taskId: task.id }}
+									className={buttonVariants()}
+								>
+									Edit <PencilIcon />
+								</Link>
+							</TableCell>
 						</TableRow>
 					))}
 				</TableBody>
