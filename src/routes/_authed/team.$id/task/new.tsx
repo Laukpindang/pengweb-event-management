@@ -1,10 +1,16 @@
 import { useForm } from '@tanstack/react-form'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import axios, { AxiosError } from 'axios'
-
+import { isAxiosError } from 'axios'
 import { ArrowLeftIcon } from 'lucide-react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle
+} from '@/components/ui/card'
 import {
 	Field,
 	FieldError,
@@ -12,146 +18,283 @@ import {
 	FieldLabel
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/toast'
-
+import { apiClient } from '@/lib/apiClient'
 import { CreateTaskSchema } from '@/schemas/tasks'
+import type { Event, TeamMember } from '@/types'
 
 export const Route = createFileRoute('/_authed/team/$id/task/new')({
-	component: RouteComponent
+	loader: async ({ params }) => {
+		try {
+			const [eventsRes, membersRes] = await Promise.all([
+				apiClient.get<Event[]>(`/teams/${params.id}/events`),
+				apiClient.get<TeamMember[]>(`/teams/${params.id}/members`)
+			])
+			return {
+				events: eventsRes.data || [],
+				members: membersRes.data || []
+			}
+		} catch (err) {
+			console.error('Failed to load events/members for task creation:', err)
+			return { events: [], members: [] }
+		}
+	},
+	component: CreateTaskPage
 })
 
-function RouteComponent() {
+function CreateTaskPage() {
+	const { events, members } = Route.useLoaderData()
+	const { id } = Route.useParams()
 	const navigate = useNavigate()
+
+	const defaultEventId = events.length > 0 ? events[0].id : ''
+
 	const form = useForm({
+		validators: {
+			onSubmit: CreateTaskSchema
+		},
 		defaultValues: {
 			title: '',
 			description: '',
-			due_date: ''
+			dueDate: '',
+			eventId: defaultEventId,
+			assigneeId: ''
 		},
-		validators: { onSubmit: CreateTaskSchema },
 		onSubmit: async ({ value }) => {
 			try {
-				await axios.post(`${import.meta.env.VITE_API_URL}/tasks`, value)
+				// Backend endpoint changed to POST /events/:eventId/tasks
+				await apiClient.post(`/events/${value.eventId}/tasks`, {
+					title: value.title.trim(),
+					description: value.description.trim(),
+					dueDate: new Date(value.dueDate).toISOString(),
+					assigneeId: value.assigneeId ? value.assigneeId : undefined
+				})
 				toast.add({
-					title: 'Success',
-					description: 'Task created',
+					title: 'Sukses',
+					description: 'Tugas berhasil dibuat!',
 					type: 'success'
 				})
-				navigate({ to: '..' })
+				navigate({ to: '/team/$id/task', params: { id } })
 			} catch (error) {
-				if (error instanceof AxiosError) {
-					toast.add({
-						title: 'Error',
-						description: error.message,
-						type: 'error'
-					})
-				} else {
-					toast.add({
-						title: 'Error',
-						description: 'Something when wrong',
-						type: 'error'
-					})
+				let message = 'Gagal membuat tugas'
+				if (isAxiosError(error) && error.response?.data?.message) {
+					const msg = error.response.data.message
+					message = Array.isArray(msg) ? msg.join(', ') : msg
 				}
+				toast.add({
+					title: 'Error',
+					description: message,
+					type: 'error'
+				})
 			}
 		}
 	})
 
-	return (
-		<div>
-			<div className="flex gap-3 mb-10">
-				<Link to=".." className={buttonVariants({ variant: 'secondary' })}>
-					<ArrowLeftIcon />
-				</Link>
-				<h1 className="text-2xl">Create a Task</h1>
-			</div>
-			<form
-				onSubmit={(e) => {
-					e.preventDefault()
-					form.handleSubmit()
-				}}
-			>
-				<FieldGroup>
-					<form.Field name="title">
-						{(field) => {
-							const isInvalid =
-								field.state.meta.isTouched && !field.state.meta.isValid
-							return (
-								<Field data-invalid={isInvalid}>
-									<FieldLabel htmlFor={field.name}>Title</FieldLabel>
-									<Input
-										id={field.name}
-										name={field.name}
-										value={field.state.value}
-										onChange={(e) => field.handleChange(e.target.value)}
-										onBlur={field.handleBlur}
-										aria-invalid={isInvalid}
-									/>
-									{isInvalid && <FieldError errors={field.state.meta.errors} />}
-								</Field>
-							)
-						}}
-					</form.Field>
-					<form.Field name="description">
-						{(field) => {
-							const isInvalid =
-								field.state.meta.isTouched && !field.state.meta.isValid
-							return (
-								<Field data-invalid={isInvalid}>
-									<FieldLabel htmlFor={field.name}>Description</FieldLabel>
-									<Input
-										id={field.name}
-										name={field.name}
-										value={field.state.value}
-										onChange={(e) => field.handleChange(e.target.value)}
-										onBlur={field.handleBlur}
-										aria-invalid={isInvalid}
-									/>
-									{isInvalid && <FieldError errors={field.state.meta.errors} />}
-								</Field>
-							)
-						}}
-					</form.Field>
-					<form.Field name="due_date">
-						{(field) => {
-							const isInvalid =
-								field.state.meta.isTouched && !field.state.meta.isValid
-							return (
-								<Field data-invalid={isInvalid}>
-									<FieldLabel htmlFor={field.name}>Description</FieldLabel>
-									<Input
-										id={field.name}
-										name={field.name}
-										value={field.state.value}
-										onChange={(e) => field.handleChange(e.target.value)}
-										onBlur={field.handleBlur}
-										aria-invalid={isInvalid}
-										type="date"
-									/>
-									{isInvalid && <FieldError errors={field.state.meta.errors} />}
-								</Field>
-							)
-						}}
-					</form.Field>
-					<Field>
-						<form.Subscribe
-							selector={(state) => ({
-								isSubmitting: state.isSubmitting,
-								canSubmit: state.canSubmit
-							})}
+	if (events.length === 0) {
+		return (
+			<div className="max-w-md mx-auto mt-12 text-center space-y-4">
+				<Card className="p-8">
+					<CardTitle className="text-xl">Event Belum Dibuat</CardTitle>
+					<CardDescription className="mt-2 mb-6">
+						Setiap tugas harus terhubung ke dalam suatu event. Silakan buat event terlebih dahulu sebelum menambahkan tugas baru.
+					</CardDescription>
+					<div className="flex justify-center gap-3">
+						<Link
+							to="/team/$id/task"
+							params={{ id }}
+							className={buttonVariants({ variant: 'outline' })}
 						>
-							{({ isSubmitting, canSubmit }) => (
-								<Button
-									type="submit"
-									disabled={!canSubmit || isSubmitting}
-									aria-disabled={!canSubmit || isSubmitting}
+							Kembali
+						</Link>
+						<Link
+							to="/team/$id/event/new"
+							params={{ id }}
+							className={buttonVariants({ variant: 'default' })}
+						>
+							Buat Event Sekarang
+						</Link>
+					</div>
+				</Card>
+			</div>
+		)
+	}
+
+	return (
+		<div className="max-w-xl mx-auto space-y-4">
+			<div>
+				<Link
+					to="/team/$id/task"
+					params={{ id }}
+					className={buttonVariants({ variant: 'ghost', size: 'sm' })}
+				>
+					<ArrowLeftIcon className="w-4 h-4 mr-1" />
+					Kembali ke Daftar Tugas
+				</Link>
+			</div>
+
+			<Card>
+				<CardHeader>
+					<CardTitle className="text-xl">Buat Tugas Baru</CardTitle>
+					<CardDescription>
+						Tambahkan tugas baru untuk anggota tim dalam event yang dipilih.
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault()
+							form.handleSubmit()
+						}}
+					>
+						<FieldGroup>
+							<form.Field name="title">
+								{(field) => {
+									const isInvalid =
+										field.state.meta.isTouched && !field.state.meta.isValid
+									return (
+										<Field data-invalid={isInvalid}>
+											<FieldLabel htmlFor={field.name}>Judul Tugas (5-50 karakter)</FieldLabel>
+											<Input
+												id={field.name}
+												name={field.name}
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.target.value)}
+												onBlur={field.handleBlur}
+												aria-invalid={isInvalid}
+												placeholder="Contoh: Desain landing page mockup"
+											/>
+											{isInvalid && (
+												<FieldError errors={field.state.meta.errors} />
+											)}
+										</Field>
+									)
+								}}
+							</form.Field>
+
+							<form.Field name="description">
+								{(field) => {
+									const isInvalid =
+										field.state.meta.isTouched && !field.state.meta.isValid
+									return (
+										<Field data-invalid={isInvalid}>
+											<FieldLabel htmlFor={field.name}>Deskripsi (10-100 karakter)</FieldLabel>
+											<Textarea
+												id={field.name}
+												name={field.name}
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.target.value)}
+												onBlur={field.handleBlur}
+												aria-invalid={isInvalid}
+												placeholder="Jelaskan kebutuhan dan detail pengerjaan tugas ini..."
+												rows={3}
+											/>
+											{isInvalid && (
+												<FieldError errors={field.state.meta.errors} />
+											)}
+										</Field>
+									)
+								}}
+							</form.Field>
+
+							<form.Field name="eventId">
+								{(field) => {
+									const isInvalid =
+										field.state.meta.isTouched && !field.state.meta.isValid
+									return (
+										<Field data-invalid={isInvalid}>
+											<FieldLabel htmlFor={field.name}>Pilih Event Terkait</FieldLabel>
+											<select
+												id={field.name}
+												name={field.name}
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.target.value)}
+												onBlur={field.handleBlur}
+												className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+											>
+												{events.map((event) => (
+													<option key={event.id} value={event.id}>
+														{event.name}
+													</option>
+												))}
+											</select>
+											{isInvalid && (
+												<FieldError errors={field.state.meta.errors} />
+											)}
+										</Field>
+									)
+								}}
+							</form.Field>
+
+							<form.Field name="assigneeId">
+								{(field) => (
+									<Field>
+										<FieldLabel htmlFor={field.name}>Tugaskan Kepada (Opsional)</FieldLabel>
+										<select
+											id={field.name}
+											name={field.name}
+											value={field.state.value || ''}
+											onChange={(e) => field.handleChange(e.target.value)}
+											onBlur={field.handleBlur}
+											className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+										>
+											<option value="">Belum Ditugaskan (Unassigned)</option>
+											{members.map((member) => (
+												<option key={member.user.id} value={member.user.id}>
+													{member.user.name} ({member.user.email})
+												</option>
+											))}
+										</select>
+									</Field>
+								)}
+							</form.Field>
+
+							<form.Field name="dueDate">
+								{(field) => {
+									const isInvalid =
+										field.state.meta.isTouched && !field.state.meta.isValid
+									return (
+										<Field data-invalid={isInvalid}>
+											<FieldLabel htmlFor={field.name}>Batas Waktu (Due Date)</FieldLabel>
+											<Input
+												id={field.name}
+												name={field.name}
+												type="datetime-local"
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.target.value)}
+												onBlur={field.handleBlur}
+												aria-invalid={isInvalid}
+											/>
+											{isInvalid && (
+												<FieldError errors={field.state.meta.errors} />
+											)}
+										</Field>
+									)
+								}}
+							</form.Field>
+
+							<Field>
+								<form.Subscribe
+									selector={(state) => ({
+										isSubmitting: state.isSubmitting,
+										canSubmit: state.canSubmit
+									})}
 								>
-									{isSubmitting ? 'Loading...' : 'Create task'}
-								</Button>
-							)}
-						</form.Subscribe>
-					</Field>
-				</FieldGroup>
-			</form>
+									{({ isSubmitting, canSubmit }) => (
+										<Button
+											type="submit"
+											className="w-full mt-4"
+											disabled={!canSubmit || isSubmitting}
+										>
+											{isSubmitting ? 'Menyimpan...' : 'Simpan Tugas'}
+										</Button>
+									)}
+								</form.Subscribe>
+							</Field>
+						</FieldGroup>
+					</form>
+				</CardContent>
+			</Card>
 		</div>
 	)
 }

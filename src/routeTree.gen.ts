@@ -26,6 +26,9 @@ import { Route as AuthedTeamIdMemberAddRouteImport } from './routes/_authed/team
 import { Route as AuthedTeamIdTaskIndexRouteImport } from './routes/_authed/team.$id/task/index'
 import { Route as AuthedTeamIdTaskNewRouteImport } from './routes/_authed/team.$id/task/new'
 import { Route as AuthedTeamIdTaskTaskIdEditRouteImport } from './routes/_authed/team.$id/task/$taskId.edit'
+import { Route as AuthedTeamIdEventEventIdTaskIndexRouteImport } from './routes/_authed/team.$id/event/$eventId/task/index'
+import { Route as AuthedTeamIdEventEventIdTaskNewRouteImport } from './routes/_authed/team.$id/event/$eventId/task/new'
+import { Route as AuthedTeamIdEventEventIdTaskTaskIdEditRouteImport } from './routes/_authed/team.$id/event/$eventId/task/$taskId.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -112,6 +115,24 @@ const AuthedTeamIdTaskTaskIdEditRoute =
     path: '/$id/task/$taskId/edit',
     getParentRoute: () => AuthedTeamRoute,
   } as any)
+const AuthedTeamIdEventEventIdTaskIndexRoute =
+  AuthedTeamIdEventEventIdTaskIndexRouteImport.update({
+    id: '/$id/event/$eventId/task/',
+    path: '/$id/event/$eventId/task/',
+    getParentRoute: () => AuthedTeamRoute,
+  } as any)
+const AuthedTeamIdEventEventIdTaskNewRoute =
+  AuthedTeamIdEventEventIdTaskNewRouteImport.update({
+    id: '/$id/event/$eventId/task/new',
+    path: '/$id/event/$eventId/task/new',
+    getParentRoute: () => AuthedTeamRoute,
+  } as any)
+const AuthedTeamIdEventEventIdTaskTaskIdEditRoute =
+  AuthedTeamIdEventEventIdTaskTaskIdEditRouteImport.update({
+    id: '/$id/event/$eventId/task/$taskId/edit',
+    path: '/$id/event/$eventId/task/$taskId/edit',
+    getParentRoute: () => AuthedTeamRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -130,6 +151,9 @@ export interface FileRoutesByFullPath {
   '/team/$id/member/': typeof AuthedTeamIdMemberIndexRoute
   '/team/$id/task/': typeof AuthedTeamIdTaskIndexRoute
   '/team/$id/task/$taskId/edit': typeof AuthedTeamIdTaskTaskIdEditRoute
+  '/team/$id/event/$eventId/task/new': typeof AuthedTeamIdEventEventIdTaskNewRoute
+  '/team/$id/event/$eventId/task/': typeof AuthedTeamIdEventEventIdTaskIndexRoute
+  '/team/$id/event/$eventId/task/$taskId/edit': typeof AuthedTeamIdEventEventIdTaskTaskIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -148,6 +172,9 @@ export interface FileRoutesByTo {
   '/team/$id/member': typeof AuthedTeamIdMemberIndexRoute
   '/team/$id/task': typeof AuthedTeamIdTaskIndexRoute
   '/team/$id/task/$taskId/edit': typeof AuthedTeamIdTaskTaskIdEditRoute
+  '/team/$id/event/$eventId/task/new': typeof AuthedTeamIdEventEventIdTaskNewRoute
+  '/team/$id/event/$eventId/task': typeof AuthedTeamIdEventEventIdTaskIndexRoute
+  '/team/$id/event/$eventId/task/$taskId/edit': typeof AuthedTeamIdEventEventIdTaskTaskIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -168,6 +195,9 @@ export interface FileRoutesById {
   '/_authed/team/$id/member/': typeof AuthedTeamIdMemberIndexRoute
   '/_authed/team/$id/task/': typeof AuthedTeamIdTaskIndexRoute
   '/_authed/team/$id/task/$taskId/edit': typeof AuthedTeamIdTaskTaskIdEditRoute
+  '/_authed/team/$id/event/$eventId/task/new': typeof AuthedTeamIdEventEventIdTaskNewRoute
+  '/_authed/team/$id/event/$eventId/task/': typeof AuthedTeamIdEventEventIdTaskIndexRoute
+  '/_authed/team/$id/event/$eventId/task/$taskId/edit': typeof AuthedTeamIdEventEventIdTaskTaskIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -188,6 +218,9 @@ export interface FileRouteTypes {
     | '/team/$id/member/'
     | '/team/$id/task/'
     | '/team/$id/task/$taskId/edit'
+    | '/team/$id/event/$eventId/task/new'
+    | '/team/$id/event/$eventId/task/'
+    | '/team/$id/event/$eventId/task/$taskId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -206,6 +239,9 @@ export interface FileRouteTypes {
     | '/team/$id/member'
     | '/team/$id/task'
     | '/team/$id/task/$taskId/edit'
+    | '/team/$id/event/$eventId/task/new'
+    | '/team/$id/event/$eventId/task'
+    | '/team/$id/event/$eventId/task/$taskId/edit'
   id:
     | '__root__'
     | '/'
@@ -225,6 +261,9 @@ export interface FileRouteTypes {
     | '/_authed/team/$id/member/'
     | '/_authed/team/$id/task/'
     | '/_authed/team/$id/task/$taskId/edit'
+    | '/_authed/team/$id/event/$eventId/task/new'
+    | '/_authed/team/$id/event/$eventId/task/'
+    | '/_authed/team/$id/event/$eventId/task/$taskId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -355,6 +394,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedTeamIdTaskTaskIdEditRouteImport
       parentRoute: typeof AuthedTeamRoute
     }
+    '/_authed/team/$id/event/$eventId/task/': {
+      id: '/_authed/team/$id/event/$eventId/task/'
+      path: '/$id/event/$eventId/task'
+      fullPath: '/team/$id/event/$eventId/task/'
+      preLoaderRoute: typeof AuthedTeamIdEventEventIdTaskIndexRouteImport
+      parentRoute: typeof AuthedTeamRoute
+    }
+    '/_authed/team/$id/event/$eventId/task/new': {
+      id: '/_authed/team/$id/event/$eventId/task/new'
+      path: '/$id/event/$eventId/task/new'
+      fullPath: '/team/$id/event/$eventId/task/new'
+      preLoaderRoute: typeof AuthedTeamIdEventEventIdTaskNewRouteImport
+      parentRoute: typeof AuthedTeamRoute
+    }
+    '/_authed/team/$id/event/$eventId/task/$taskId/edit': {
+      id: '/_authed/team/$id/event/$eventId/task/$taskId/edit'
+      path: '/$id/event/$eventId/task/$taskId/edit'
+      fullPath: '/team/$id/event/$eventId/task/$taskId/edit'
+      preLoaderRoute: typeof AuthedTeamIdEventEventIdTaskTaskIdEditRouteImport
+      parentRoute: typeof AuthedTeamRoute
+    }
   }
 }
 
@@ -368,6 +428,9 @@ interface AuthedTeamRouteChildren {
   AuthedTeamIdMemberIndexRoute: typeof AuthedTeamIdMemberIndexRoute
   AuthedTeamIdTaskIndexRoute: typeof AuthedTeamIdTaskIndexRoute
   AuthedTeamIdTaskTaskIdEditRoute: typeof AuthedTeamIdTaskTaskIdEditRoute
+  AuthedTeamIdEventEventIdTaskNewRoute: typeof AuthedTeamIdEventEventIdTaskNewRoute
+  AuthedTeamIdEventEventIdTaskIndexRoute: typeof AuthedTeamIdEventEventIdTaskIndexRoute
+  AuthedTeamIdEventEventIdTaskTaskIdEditRoute: typeof AuthedTeamIdEventEventIdTaskTaskIdEditRoute
 }
 
 const AuthedTeamRouteChildren: AuthedTeamRouteChildren = {
@@ -380,6 +443,11 @@ const AuthedTeamRouteChildren: AuthedTeamRouteChildren = {
   AuthedTeamIdMemberIndexRoute: AuthedTeamIdMemberIndexRoute,
   AuthedTeamIdTaskIndexRoute: AuthedTeamIdTaskIndexRoute,
   AuthedTeamIdTaskTaskIdEditRoute: AuthedTeamIdTaskTaskIdEditRoute,
+  AuthedTeamIdEventEventIdTaskNewRoute: AuthedTeamIdEventEventIdTaskNewRoute,
+  AuthedTeamIdEventEventIdTaskIndexRoute:
+    AuthedTeamIdEventEventIdTaskIndexRoute,
+  AuthedTeamIdEventEventIdTaskTaskIdEditRoute:
+    AuthedTeamIdEventEventIdTaskTaskIdEditRoute,
 }
 
 const AuthedTeamRouteWithChildren = AuthedTeamRoute._addFileChildren(

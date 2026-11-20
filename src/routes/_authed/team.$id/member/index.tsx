@@ -1,9 +1,22 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { RotateCcwIcon } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
+import { isAxiosError } from 'axios'
+import {
+	CopyIcon,
+	ShieldCheckIcon,
+	Trash2Icon,
+	UserPlusIcon,
+	UsersIcon
+} from 'lucide-react'
+import { useState } from 'react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle
+} from '@/components/ui/card'
 import {
 	Table,
 	TableBody,
@@ -12,106 +25,195 @@ import {
 	TableHeader,
 	TableRow
 } from '@/components/ui/table'
-
-type Member = {
-	id: number
-	name: string
-	username: string
-	email: string
-	address: {
-		street: string
-		suite: string
-		city: string
-		zipcode: string
-		geo: {
-			lat: string
-			lng: string
-		}
-	}
-	phone: string
-	website: string
-	company: {
-		name: string
-		catchPhrase: string
-		bs: string
-	}
-}
+import { toast } from '@/components/ui/toast'
+import { apiClient } from '@/lib/apiClient'
+import { useAuth } from '@/lib/useAuth'
+import type { Team, TeamMember } from '@/types'
 
 export const Route = createFileRoute('/_authed/team/$id/member/')({
-	component: RouteComponent
+	loader: async ({ params }) => {
+		try {
+			const [teamRes, membersRes] = await Promise.all([
+				apiClient.get<Team>(`/teams/${params.id}`),
+				apiClient.get<TeamMember[]>(`/teams/${params.id}/members`)
+			])
+			return {
+				team: teamRes.data,
+				members: membersRes.data || []
+			}
+		} catch (err) {
+			console.error('Failed to load team members:', err)
+			throw err
+		}
+	},
+	component: MembersPage
 })
 
-function RouteComponent() {
+function MembersPage() {
+	const { team, members } = Route.useLoaderData()
 	const { id } = Route.useParams()
+	const { user } = useAuth()
+	const router = useRouter()
+	const [copied, setCopied] = useState(false)
+	const [removingId, setRemovingId] = useState<string | null>(null)
 
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState(false)
-	const [members, setMembers] = useState<Member[]>([])
+	const copyTeamId = () => {
+		navigator.clipboard.writeText(team.id)
+		setCopied(true)
+		toast.add({
+			title: 'ID Disalin',
+			description: 'Team ID berhasil disalin ke clipboard!',
+			type: 'success'
+		})
+		setTimeout(() => setCopied(false), 2000)
+	}
 
-	const getData = useCallback(() => {
-		setLoading(true)
-		setError(false)
-		fetch(`https://jsonplaceholder.typicode.com/users`)
-			.then(async (response) => {
-				if (!response.ok) {
-					throw new Error('Network response was not ok')
-				}
-				setMembers(await response.json())
-			})
-			.catch(() => {
-				setError(true)
-			})
-			.finally(() => {
-				setLoading(false)
-			})
-	}, [])
+	const handleRemoveMember = async (memberId: string, memberName: string) => {
+		if (!window.confirm(`Apakah Anda yakin ingin mengeluarkan ${memberName} dari tim?`)) {
+			return
+		}
 
-	useEffect(() => {
-		getData()
-	}, [getData])
+		try {
+			setRemovingId(memberId)
+			await apiClient.delete(`/teams/${id}/members/${memberId}`)
+			toast.add({
+				title: 'Sukses',
+				description: `${memberName} telah dikeluarkan dari tim`,
+				type: 'success'
+			})
+			await router.invalidate()
+		} catch (error) {
+			let message = 'Gagal mengeluarkan anggota'
+			if (isAxiosError(error) && error.response?.data?.message) {
+				message = error.response.data.message
+			}
+			toast.add({
+				title: 'Error',
+				description: message,
+				type: 'error'
+			})
+		} finally {
+			setRemovingId(null)
+		}
+	}
 
 	return (
-		<div>
-			<div className="mb-10 flex justify-between items-end">
-				<h1 className="text-3xl">Members List</h1>
+		<div className="space-y-6">
+			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+				<div>
+					<h1 className="text-2xl font-bold tracking-tight">Anggota Tim</h1>
+					<p className="text-muted-foreground text-sm">
+						Daftar anggota aktif dalam tim {team.name}
+					</p>
+				</div>
 				<Link
 					to="/team/$id/member/add"
 					params={{ id }}
 					className={buttonVariants({ variant: 'default' })}
 				>
-					Tambah Anggota
+					<UserPlusIcon className="w-4 h-4 mr-1" />
+					Undang Anggota
 				</Link>
 			</div>
-			{loading ? (
-				<div>
-					<Skeleton className="h-64 w-full" />
-				</div>
-			) : error ? (
-				<div>
-					<p className="text-red-500 mb-5">Gagal mengambil data anggota</p>
-					<Button onClick={getData}>
-						<RotateCcwIcon />
-						Coba lagi
-					</Button>
-				</div>
-			) : (
-				<Table>
-					<TableHeader>
-						<TableRow>
-							<TableHead>Name</TableHead>
-							<TableHead>Email</TableHead>
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{members.map((member) => (
-							<TableRow key={member.id}>
-								<TableCell>{member.name}</TableCell>
-								<TableCell>{member.email}</TableCell>
+
+			{/* Team ID Invitation Banner */}
+			<Card className="border-primary/20 bg-primary/5">
+				<CardHeader className="pb-3">
+					<CardTitle className="text-base flex items-center gap-2">
+						<UsersIcon className="w-5 h-5 text-primary" />
+						Undang Rekan ke Tim Ini
+					</CardTitle>
+					<CardDescription>
+						Bagikan Team ID di bawah ini kepada rekan kerja Anda. Mereka dapat memasukkan ID ini di menu &quot;Gabung Tim&quot; setelah login.
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+						<div className="font-mono text-sm bg-background border px-3 py-1.5 rounded-md font-semibold select-all">
+							{team.id}
+						</div>
+						<Button variant="outline" size="sm" onClick={copyTeamId}>
+							<CopyIcon className="w-4 h-4 mr-1" />
+							{copied ? 'Tersalin!' : 'Salin Team ID'}
+						</Button>
+					</div>
+				</CardContent>
+			</Card>
+
+			{/* Members Table */}
+			<div className="space-y-2">
+				<h2 className="text-lg font-semibold">
+					Daftar Anggota ({members.length})
+				</h2>
+				<div className="rounded-lg border bg-card">
+					<Table>
+						<TableHeader>
+							<TableRow>
+								<TableHead>Nama</TableHead>
+								<TableHead>Email</TableHead>
+								<TableHead>Peran (Role)</TableHead>
+								<TableHead>Bergabung Sejak</TableHead>
+								<TableHead className="text-right">Aksi</TableHead>
 							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			)}
+						</TableHeader>
+						<TableBody>
+							{members.map((member) => {
+								const isCurrentUser = member.user.id === user?.id
+								return (
+									<TableRow key={member.id}>
+										<TableCell className="font-semibold">
+											<div className="flex items-center gap-2">
+												<div className="flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xs">
+													{member.user.name?.charAt(0).toUpperCase() || 'U'}
+												</div>
+												<span>{member.user.name}</span>
+												{isCurrentUser && (
+													<span className="text-xs text-muted-foreground font-normal">
+														(Anda)
+													</span>
+												)}
+											</div>
+										</TableCell>
+										<TableCell>{member.user.email}</TableCell>
+										<TableCell>
+											<span
+												className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+													member.role === 'OWNER'
+														? 'bg-primary/15 text-primary font-semibold'
+														: 'bg-muted text-muted-foreground'
+												}`}
+											>
+												<ShieldCheckIcon className="w-3 h-3" />
+												{member.role}
+											</span>
+										</TableCell>
+										<TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+											{new Date(member.createdAt).toLocaleDateString('id-ID', {
+												dateStyle: 'medium'
+											})}
+										</TableCell>
+										<TableCell className="text-right">
+											{!isCurrentUser && (
+												<Button
+													variant="destructive"
+													size="xs"
+													disabled={removingId === member.id}
+													onClick={() =>
+														handleRemoveMember(member.id, member.user.name)
+													}
+												>
+													<Trash2Icon className="w-3.5 h-3.5 mr-1" />
+													Keluarkan
+												</Button>
+											)}
+										</TableCell>
+									</TableRow>
+								)
+							})}
+						</TableBody>
+					</Table>
+				</div>
+			</div>
 		</div>
 	)
 }

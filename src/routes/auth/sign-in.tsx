@@ -19,21 +19,22 @@ import {
 	FieldDescription,
 	FieldError,
 	FieldGroup,
-	FieldLabel,
-	FieldSeparator
+	FieldLabel
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/toast'
+
 import { SignInSchema } from '@/schemas/auth'
 
 export const Route = createFileRoute('/auth/sign-in')({
-	beforeLoad: async () => {
-		// check session from server here
-		const session = false
+	validateSearch: (search: Record<string, unknown>) => ({
+		redirect: typeof search.redirect === 'string' ? search.redirect : undefined
+	}),
+	beforeLoad: async ({ context }) => {
+		const session = await context.auth.ensureSession()
 
 		if (session) {
-			// check if user has a team
-			const hasTeam = { hasTeam: true, teamId: '1' }
+			const hasTeam = await context.auth.checkHasTeam()
 			if (hasTeam.hasTeam) {
 				throw redirect({ to: '/team/$id', params: { id: hasTeam.teamId } })
 			}
@@ -44,6 +45,9 @@ export const Route = createFileRoute('/auth/sign-in')({
 })
 
 function Login() {
+	const ctx = Route.useRouteContext()
+	const search = Route.useSearch()
+
 	const navigate = useNavigate()
 	const form = useForm({
 		validators: {
@@ -53,28 +57,37 @@ function Login() {
 			email: '',
 			password: ''
 		},
-		onSubmit: async () => {
-			// hit api here to sign in user
-			// const res = await authClient.signIn.email(value)
-			// if (res.error) {
-			// 	toast.add({
-			// 		title: 'Error',
-			// 		description: res.error.message,
-			// 		type: 'error'
-			// 	})
-			// 	return
-			// }
-			toast.add({
-				title: 'Success',
-				description: 'You have been logged in.',
-				type: 'success'
-			})
-			const hasTeam = { hasTeam: true, teamId: '1' }
-			if (hasTeam.hasTeam) {
-				navigate({ to: '/team/$id', params: { id: hasTeam.teamId } })
-				return
+		onSubmit: async ({ value }) => {
+			try {
+				await ctx.auth.login(value.email, value.password)
+				toast.add({
+					title: 'Success',
+					description: 'Login berhasil',
+					type: 'success'
+				})
+				if (
+					search.redirect &&
+					search.redirect !== '/' &&
+					!search.redirect.includes('/auth/')
+				) {
+					window.location.href = search.redirect
+					return
+				}
+
+				const hasTeam = await ctx.auth.checkHasTeam()
+
+				if (hasTeam.hasTeam) {
+					navigate({ to: '/team/$id', params: { id: hasTeam.teamId } })
+					return
+				}
+				navigate({ to: '/onboard' })
+			} catch (error) {
+				toast.add({
+					title: 'Gagal',
+					description: String(error),
+					type: 'error'
+				})
 			}
-			navigate({ to: '/onboard' })
 		}
 	})
 
@@ -164,17 +177,6 @@ function Login() {
 									Don&apos;t have an account?{' '}
 									<Link to="/auth/sign-up">Sign up</Link>
 								</FieldDescription>
-							</Field>
-							<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-								Or continue with
-							</FieldSeparator>
-							<Field>
-								<Button variant="outline" type="button">
-									Login with Apple
-								</Button>
-								<Button variant="outline" type="button">
-									Login with Google
-								</Button>
 							</Field>
 						</FieldGroup>
 					</form>

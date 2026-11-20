@@ -1,5 +1,4 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
-
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { AppSidebar } from '@/components/app-sidebar'
 import {
 	Breadcrumb,
@@ -13,20 +12,25 @@ import {
 	SidebarProvider,
 	SidebarTrigger
 } from '@/components/ui/sidebar'
+import { apiClient } from '@/lib/apiClient'
+import type { Team } from '@/types'
 
 export const Route = createFileRoute('/_authed/team')({
-	loader: async () => [
-		{
-			id: '1',
-			name: 'Team 1',
-			description: 'Description 1'
-		},
-		{
-			id: '2',
-			name: 'Team 2',
-			description: 'Description 2'
+	loader: async () => {
+		try {
+			const { data: teams } = await apiClient.get<Team[]>('/teams')
+			if (!teams || teams.length === 0) {
+				throw redirect({ to: '/onboard' })
+			}
+			return teams
+		} catch (err) {
+			if (err && typeof err === 'object' && 'to' in err) {
+				throw err
+			}
+			console.error('Failed to load teams:', err)
+			return []
 		}
-	],
+	},
 	component: TeamLayout
 })
 
@@ -37,8 +41,8 @@ function TeamLayout() {
 		<SidebarProvider>
 			<AppSidebar teams={teams} />
 			<SidebarInset>
-				<header className="flex h-14 shrink-0 items-center gap-2">
-					<div className="flex flex-1 items-center gap-2 px-3">
+				<header className="flex h-14 shrink-0 items-center justify-between border-b px-4">
+					<div className="flex items-center gap-2">
 						<SidebarTrigger />
 						<Separator
 							orientation="vertical"
@@ -47,7 +51,7 @@ function TeamLayout() {
 						<Breadcrumb>
 							<BreadcrumbList>
 								<BreadcrumbItem>
-									<BreadcrumbPage className="line-clamp-1">
+									<BreadcrumbPage className="font-semibold text-foreground">
 										Team Management & Task Tracking
 									</BreadcrumbPage>
 								</BreadcrumbItem>
@@ -55,7 +59,7 @@ function TeamLayout() {
 						</Breadcrumb>
 					</div>
 				</header>
-				<main className="px-5">
+				<main className="flex-1 p-4 md:p-6 max-w-7xl w-full mx-auto">
 					<Outlet />
 				</main>
 			</SidebarInset>

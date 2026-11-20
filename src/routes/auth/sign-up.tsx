@@ -19,20 +19,18 @@ import {
 	FieldDescription,
 	FieldError,
 	FieldGroup,
-	FieldLabel,
-	FieldSeparator
+	FieldLabel
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/toast'
 import { SignUpSchema } from '@/schemas/auth'
 
 export const Route = createFileRoute('/auth/sign-up')({
-	beforeLoad: async () => {
-		const session = false
+	beforeLoad: async ({ context }) => {
+		const session = await context.auth.ensureSession()
 
 		if (session) {
-			// check if user has a team
-			const hasTeam = { hasTeam: true, teamId: '1' }
+			const hasTeam = await context.auth.checkHasTeam()
 			if (hasTeam.hasTeam) {
 				throw redirect({ to: '/team/$id', params: { id: hasTeam.teamId } })
 			}
@@ -43,6 +41,8 @@ export const Route = createFileRoute('/auth/sign-up')({
 })
 
 function Register() {
+	const ctx = Route.useRouteContext()
+
 	const navigate = useNavigate()
 	const form = useForm({
 		validators: {
@@ -53,23 +53,22 @@ function Register() {
 			email: '',
 			password: ''
 		},
-		onSubmit: async () => {
-			// hit api here to create user
-			// const res = await authClient.signUp.email(value)
-			// if (res.error) {
-			// 	toast.add({
-			// 		title: 'Error',
-			// 		description: res.error.message,
-			// 		type: 'error'
-			// 	})
-			// 	return
-			// }
-			toast.add({
-				title: 'Success',
-				description: 'Your account have been created.',
-				type: 'success'
-			})
-			navigate({ to: '/onboard' })
+		onSubmit: async ({ value }) => {
+			try {
+				await ctx.auth.register(value.name, value.email, value.password)
+				toast.add({
+					title: 'Success',
+					description: 'Akun telah dibuat',
+					type: 'success'
+				})
+				navigate({ to: '/onboard' })
+			} catch (error) {
+				toast.add({
+					title: 'Error',
+					description: String(error),
+					type: 'error'
+				})
+			}
 		}
 	})
 
@@ -179,19 +178,11 @@ function Register() {
 									)}
 								</form.Subscribe>
 								<FieldDescription className="text-center">
-									Have an account? <Link to="/auth/sign-in">Sign in</Link>
+									Have an account?{' '}
+									<Link search={{ redirect: '/' }} to="/auth/sign-in">
+										Sign in
+									</Link>
 								</FieldDescription>
-							</Field>
-							<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-								Or continue with
-							</FieldSeparator>
-							<Field>
-								<Button variant="outline" type="button">
-									Login with Apple
-								</Button>
-								<Button variant="outline" type="button">
-									Login with Google
-								</Button>
 							</Field>
 						</FieldGroup>
 					</form>

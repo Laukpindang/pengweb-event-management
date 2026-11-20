@@ -1,14 +1,21 @@
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router'
+import {
+	createRootRouteWithContext,
+	HeadContent,
+	Scripts
+} from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-
+import type { AuthContextType } from '@/auth'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/toast'
 import { TooltipProvider } from '@/components/ui/tooltip'
-
 import appCss from '../styles.css?url'
 
-export const Route = createRootRoute({
+export interface MyRouteContext {
+	auth: AuthContextType
+}
+
+export const Route = createRootRouteWithContext<MyRouteContext>()({
 	head: () => ({
 		meta: [
 			{
@@ -19,7 +26,7 @@ export const Route = createRootRoute({
 				content: 'width=device-width, initial-scale=1'
 			},
 			{
-				title: 'TanStack Start Starter'
+				title: 'Team Management System'
 			}
 		],
 		links: [

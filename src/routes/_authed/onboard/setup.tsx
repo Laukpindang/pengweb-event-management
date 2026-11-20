@@ -1,6 +1,7 @@
 import { useForm } from '@tanstack/react-form'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { ArrowBigLeft } from 'lucide-react'
+import { isAxiosError } from 'axios'
+import { ArrowLeftIcon } from 'lucide-react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
@@ -17,20 +18,12 @@ import {
 	FieldLabel
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/toast'
-
+import { apiClient } from '@/lib/apiClient'
 import { CreateTeamSchema } from '@/schemas/team'
 
 export const Route = createFileRoute('/_authed/onboard/setup')({
-	// beforeLoad: async () => {
-	// 	const session = await getSession()
-
-	// 	if (!session) {
-	// 		throw redirect({
-	// 			to: '/auth/sign-in'
-	// 		})
-	// 	}
-	// },
 	component: CreateTeam
 })
 
@@ -44,36 +37,46 @@ function CreateTeam() {
 			name: '',
 			description: ''
 		},
-		onSubmit: async () => {
+		onSubmit: async ({ value }) => {
 			try {
-				// const teamId = await createTeam({ data: value })
+				const { data: teamId } = await apiClient.post<string>('/teams', value)
 				toast.add({
-					title: 'Success',
-					description: 'Your team have been created.',
+					title: 'Sukses',
+					description: 'Tim baru berhasil dibuat.',
 					type: 'success'
 				})
-				navigate({ to: '/team/$id', params: { id: '1' } })
+				navigate({ to: '/team/$id', params: { id: teamId } })
 			} catch (error) {
-				console.log(error)
+				let message = 'Gagal membuat tim'
+				if (isAxiosError(error) && error.response?.data?.message) {
+					message = error.response.data.message
+				}
+				toast.add({
+					title: 'Error',
+					description: message,
+					type: 'error'
+				})
 			}
 		}
 	})
 
 	return (
-		<div className="flex flex-col max-w-md mx-auto mt-5">
-			<div>
+		<div className="flex flex-col max-w-md mx-auto mt-8 px-4">
+			<div className="mb-4">
 				<Link
-					className={`mb-5 ${buttonVariants({ variant: 'secondary' })}`}
+					className={buttonVariants({ variant: 'ghost', size: 'sm' })}
 					to="/onboard"
 				>
-					<ArrowBigLeft />
-					Back
+					<ArrowLeftIcon className="w-4 h-4 mr-1" />
+					Kembali
 				</Link>
 			</div>
 			<Card>
 				<CardHeader className="text-center">
-					<CardTitle className="text-xl">Create a team</CardTitle>
-					<CardDescription>Start by creating your team.</CardDescription>
+					<CardTitle className="text-xl">Buat Tim Baru</CardTitle>
+					<CardDescription>
+						Mulai dengan memberi nama dan deskripsi ruang kerja tim Anda.
+					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<form
@@ -89,7 +92,7 @@ function CreateTeam() {
 										field.state.meta.isTouched && !field.state.meta.isValid
 									return (
 										<Field data-invalid={isInvalid}>
-											<FieldLabel htmlFor={field.name}>Team Name</FieldLabel>
+											<FieldLabel htmlFor={field.name}>Nama Tim</FieldLabel>
 											<Input
 												id={field.name}
 												name={field.name}
@@ -97,7 +100,7 @@ function CreateTeam() {
 												onChange={(e) => field.handleChange(e.target.value)}
 												onBlur={field.handleBlur}
 												aria-invalid={isInvalid}
-												placeholder="Awesome Team"
+												placeholder="Contoh: Web Development Project"
 											/>
 											{isInvalid && (
 												<FieldError errors={field.state.meta.errors} />
@@ -106,6 +109,7 @@ function CreateTeam() {
 									)
 								}}
 							</form.Field>
+
 							<form.Field name="description">
 								{(field) => {
 									const isInvalid =
@@ -113,16 +117,17 @@ function CreateTeam() {
 									return (
 										<Field data-invalid={isInvalid}>
 											<FieldLabel htmlFor={field.name}>
-												Team Description
+												Deskripsi Tim
 											</FieldLabel>
-											<Input
+											<Textarea
 												id={field.name}
 												name={field.name}
 												value={field.state.value}
 												onChange={(e) => field.handleChange(e.target.value)}
 												onBlur={field.handleBlur}
 												aria-invalid={isInvalid}
-												placeholder="Passionate team"
+												placeholder="Deskripsi kegiatan atau tujuan tim ini..."
+												rows={4}
 											/>
 											{isInvalid && (
 												<FieldError errors={field.state.meta.errors} />
@@ -131,6 +136,7 @@ function CreateTeam() {
 									)
 								}}
 							</form.Field>
+
 							<Field>
 								<form.Subscribe
 									selector={(state) => ({
@@ -141,10 +147,10 @@ function CreateTeam() {
 									{({ isSubmitting, canSubmit }) => (
 										<Button
 											type="submit"
+											className="w-full mt-2"
 											disabled={!canSubmit || isSubmitting}
-											aria-disabled={!canSubmit || isSubmitting}
 										>
-											{isSubmitting ? 'Creating...' : 'Create'}
+											{isSubmitting ? 'Menyimpan...' : 'Buat Tim'}
 										</Button>
 									)}
 								</form.Subscribe>

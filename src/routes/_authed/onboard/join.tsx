@@ -1,6 +1,7 @@
 import { useForm } from '@tanstack/react-form'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { ArrowBigLeft } from 'lucide-react'
+import { isAxiosError } from 'axios'
+import { ArrowLeftIcon } from 'lucide-react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
@@ -18,19 +19,10 @@ import {
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/toast'
-
+import { apiClient } from '@/lib/apiClient'
 import { JoinTeamSchema } from '@/schemas/team'
 
 export const Route = createFileRoute('/_authed/onboard/join')({
-	// beforeLoad: async () => {
-	// 	const session = await getSession()
-
-	// 	if (!session) {
-	// 		throw redirect({
-	// 			to: '/auth/sign-in'
-	// 		})
-	// 	}
-	// },
 	component: JoinTeam
 })
 
@@ -44,35 +36,46 @@ function JoinTeam() {
 			teamId: ''
 		},
 		onSubmit: async ({ value }) => {
+			const teamId = value.teamId.trim()
 			try {
-				// await joinTeam({ data: value })
+				await apiClient.post(`/teams/join/${teamId}`)
 				toast.add({
-					title: 'Success',
-					description: 'You have joined the team.',
+					title: 'Sukses',
+					description: 'Berhasil bergabung dengan tim!',
 					type: 'success'
 				})
-				navigate({ to: '/team/$id', params: { id: value.teamId } })
+				navigate({ to: '/team/$id', params: { id: teamId } })
 			} catch (error) {
-				console.log(error)
+				let message = 'Gagal bergabung dengan tim'
+				if (isAxiosError(error) && error.response?.data?.message) {
+					message = error.response.data.message
+				}
+				toast.add({
+					title: 'Error',
+					description: message,
+					type: 'error'
+				})
 			}
 		}
 	})
 
 	return (
-		<div className="flex flex-col max-w-md mx-auto mt-5">
-			<div>
+		<div className="flex flex-col max-w-md mx-auto mt-8 px-4">
+			<div className="mb-4">
 				<Link
-					className={`mb-5 ${buttonVariants({ variant: 'secondary' })}`}
+					className={buttonVariants({ variant: 'ghost', size: 'sm' })}
 					to="/onboard"
 				>
-					<ArrowBigLeft />
-					Back
+					<ArrowLeftIcon className="w-4 h-4 mr-1" />
+					Kembali
 				</Link>
 			</div>
 			<Card>
 				<CardHeader className="text-center">
-					<CardTitle className="text-xl">Join a team</CardTitle>
-					<CardDescription>Enter team ID bellow</CardDescription>
+					<CardTitle className="text-xl">Gabung ke Tim</CardTitle>
+					<CardDescription>
+						Masukkan ID Tim yang diberikan oleh pemilik tim.
+					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<form
@@ -96,6 +99,7 @@ function JoinTeam() {
 												onChange={(e) => field.handleChange(e.target.value)}
 												onBlur={field.handleBlur}
 												aria-invalid={isInvalid}
+												placeholder="Contoh: cm3q8..."
 											/>
 											{isInvalid && (
 												<FieldError errors={field.state.meta.errors} />
@@ -104,6 +108,7 @@ function JoinTeam() {
 									)
 								}}
 							</form.Field>
+
 							<Field>
 								<form.Subscribe
 									selector={(state) => ({
@@ -114,10 +119,10 @@ function JoinTeam() {
 									{({ isSubmitting, canSubmit }) => (
 										<Button
 											type="submit"
+											className="w-full mt-2"
 											disabled={!canSubmit || isSubmitting}
-											aria-disabled={!canSubmit || isSubmitting}
 										>
-											{isSubmitting ? 'Joining...' : 'Join'}
+											{isSubmitting ? 'Memproses...' : 'Gabung Tim'}
 										</Button>
 									)}
 								</form.Subscribe>
