@@ -1,14 +1,10 @@
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { isAxiosError } from 'axios'
-import { CheckCircleIcon, ClockIcon, ListTodoIcon, PencilIcon } from 'lucide-react'
+import { ListTodoIcon, PencilIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { buttonVariants } from '@/components/ui/button'
-import {
-	Card,
-	CardDescription,
-	CardTitle
-} from '@/components/ui/card'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import {
 	Table,
 	TableBody,
@@ -29,7 +25,6 @@ export const Route = createFileRoute('/_authed/team/$id/my-task')({
 				`/teams/${params.id}/events`
 			)
 
-			// Fetch tasks for all team events from /events/:eventId/tasks
 			const taskPromises = (events || []).map(async (event) => {
 				try {
 					const { data: tasks } = await apiClient.get<Task[]>(
@@ -63,9 +58,11 @@ function MyTasksPage() {
 	const router = useRouter()
 	const [updatingId, setUpdatingId] = useState<string | null>(null)
 
-	const eventMap = useMemo(() => new Map(events.map((e) => [e.id, e.name])), [events])
+	const eventMap = useMemo(
+		() => new Map(events.map((e) => [e.id, e.name])),
+		[events]
+	)
 
-	// Filter tasks assigned to current user, or if none, show all team tasks
 	const myTasks = useMemo(() => {
 		if (!user) return tasks
 		const assigned = tasks.filter((t) => t.assigneeId === user.id)
@@ -117,7 +114,8 @@ function MyTasksPage() {
 					<ListTodoIcon className="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
 					<CardTitle className="text-lg">Tidak Ada Tugas Tertunda</CardTitle>
 					<CardDescription className="max-w-md mx-auto mt-1 mb-4">
-						Anda tidak memiliki tugas yang sedang berjalan saat ini. Kerja bagus!
+						Anda tidak memiliki tugas yang sedang berjalan saat ini. Kerja
+						bagus!
 					</CardDescription>
 					<Link
 						to="/team/$id/task"
@@ -184,7 +182,10 @@ function MyTasksPage() {
 											to="/team/$id/task/$taskId/edit"
 											params={{ id, taskId: task.id }}
 											search={{ eventId: task.eventId }}
-											className={buttonVariants({ variant: 'outline', size: 'xs' })}
+											className={buttonVariants({
+												variant: 'outline',
+												size: 'xs'
+											})}
 										>
 											<PencilIcon className="w-3.5 h-3.5 mr-1" />
 											Detail &amp; Edit

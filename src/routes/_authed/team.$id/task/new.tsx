@@ -63,7 +63,6 @@ function CreateTaskPage() {
 		},
 		onSubmit: async ({ value }) => {
 			try {
-				// Backend endpoint changed to POST /events/:eventId/tasks
 				await apiClient.post(`/events/${value.eventId}/tasks`, {
 					title: value.title.trim(),
 					description: value.description.trim(),
@@ -97,7 +96,8 @@ function CreateTaskPage() {
 				<Card className="p-8">
 					<CardTitle className="text-xl">Event Belum Dibuat</CardTitle>
 					<CardDescription className="mt-2 mb-6">
-						Setiap tugas harus terhubung ke dalam suatu event. Silakan buat event terlebih dahulu sebelum menambahkan tugas baru.
+						Setiap tugas harus terhubung ke dalam suatu event. Silakan buat
+						event terlebih dahulu sebelum menambahkan tugas baru.
 					</CardDescription>
 					<div className="flex justify-center gap-3">
 						<Link
@@ -154,7 +154,9 @@ function CreateTaskPage() {
 										field.state.meta.isTouched && !field.state.meta.isValid
 									return (
 										<Field data-invalid={isInvalid}>
-											<FieldLabel htmlFor={field.name}>Judul Tugas (5-50 karakter)</FieldLabel>
+											<FieldLabel htmlFor={field.name}>
+												Judul Tugas (5-50 karakter)
+											</FieldLabel>
 											<Input
 												id={field.name}
 												name={field.name}
@@ -178,7 +180,9 @@ function CreateTaskPage() {
 										field.state.meta.isTouched && !field.state.meta.isValid
 									return (
 										<Field data-invalid={isInvalid}>
-											<FieldLabel htmlFor={field.name}>Deskripsi (10-100 karakter)</FieldLabel>
+											<FieldLabel htmlFor={field.name}>
+												Deskripsi (10-100 karakter)
+											</FieldLabel>
 											<Textarea
 												id={field.name}
 												name={field.name}
@@ -203,7 +207,9 @@ function CreateTaskPage() {
 										field.state.meta.isTouched && !field.state.meta.isValid
 									return (
 										<Field data-invalid={isInvalid}>
-											<FieldLabel htmlFor={field.name}>Pilih Event Terkait</FieldLabel>
+											<FieldLabel htmlFor={field.name}>
+												Pilih Event Terkait
+											</FieldLabel>
 											<select
 												id={field.name}
 												name={field.name}
@@ -229,7 +235,9 @@ function CreateTaskPage() {
 							<form.Field name="assigneeId">
 								{(field) => (
 									<Field>
-										<FieldLabel htmlFor={field.name}>Tugaskan Kepada (Opsional)</FieldLabel>
+										<FieldLabel htmlFor={field.name}>
+											Tugaskan Kepada (Opsional)
+										</FieldLabel>
 										<select
 											id={field.name}
 											name={field.name}
@@ -255,7 +263,9 @@ function CreateTaskPage() {
 										field.state.meta.isTouched && !field.state.meta.isValid
 									return (
 										<Field data-invalid={isInvalid}>
-											<FieldLabel htmlFor={field.name}>Batas Waktu (Due Date)</FieldLabel>
+											<FieldLabel htmlFor={field.name}>
+												Batas Waktu (Due Date)
+											</FieldLabel>
 											<Input
 												id={field.name}
 												name={field.name}

@@ -2,8 +2,6 @@ import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { isAxiosError } from 'axios'
 import {
 	CalendarIcon,
-	CheckCircleIcon,
-	ClockIcon,
 	FilterIcon,
 	PencilIcon,
 	PlusIcon,
@@ -13,11 +11,7 @@ import {
 import { useMemo, useState } from 'react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
-import {
-	Card,
-	CardDescription,
-	CardTitle
-} from '@/components/ui/card'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import {
 	Table,
@@ -42,7 +36,6 @@ export const Route = createFileRoute('/_authed/team/$id/task/')({
 			const events = eventsRes.data || []
 			const members = membersRes.data || []
 
-			// Fetch tasks for each event using new endpoint /events/:eventId/tasks
 			const taskPromises = events.map(async (event) => {
 				try {
 					const { data: tasks } = await apiClient.get<Task[]>(
@@ -81,7 +74,10 @@ function TasksPage() {
 	const [deletingId, setDeletingId] = useState<string | null>(null)
 	const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null)
 
-	const eventMap = useMemo(() => new Map(events.map((e) => [e.id, e.name])), [events])
+	const eventMap = useMemo(
+		() => new Map(events.map((e) => [e.id, e.name])),
+		[events]
+	)
 	const memberMap = useMemo(
 		() => new Map(members.map((m) => [m.user.id, m.user.name])),
 		[members]
@@ -105,14 +101,19 @@ function TasksPage() {
 		})
 	}, [tasks, selectedEventId, selectedStatus, searchQuery])
 
-	const handleDelete = async (eventId: string, taskId: string, title: string) => {
-		if (!window.confirm(`Apakah Anda yakin ingin menghapus tugas "${title}"?`)) {
+	const handleDelete = async (
+		eventId: string,
+		taskId: string,
+		title: string
+	) => {
+		if (
+			!window.confirm(`Apakah Anda yakin ingin menghapus tugas "${title}"?`)
+		) {
 			return
 		}
 
 		try {
 			setDeletingId(taskId)
-			// Backend changed to /events/:eventId/tasks/:id
 			await apiClient.delete(`/events/${eventId}/tasks/${taskId}`)
 			toast.add({
 				title: 'Sukses',
@@ -142,7 +143,6 @@ function TasksPage() {
 	) => {
 		try {
 			setUpdatingStatusId(taskId)
-			// Backend changed to PATCH /events/:eventId/tasks/:id with { status }
 			await apiClient.patch(`/events/${eventId}/tasks/${taskId}`, {
 				status: newStatus
 			})
@@ -171,7 +171,9 @@ function TasksPage() {
 		<div className="space-y-6">
 			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 				<div>
-					<h1 className="text-2xl font-bold tracking-tight">Daftar Tugas Tim</h1>
+					<h1 className="text-2xl font-bold tracking-tight">
+						Daftar Tugas Tim
+					</h1>
 					<p className="text-muted-foreground text-sm">
 						Kelola dan pantau progress tugas-tugas tim untuk setiap event
 					</p>
@@ -190,7 +192,10 @@ function TasksPage() {
 				<div className="p-4 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 flex items-center justify-between gap-4">
 					<div className="flex items-center gap-2 text-sm">
 						<CalendarIcon className="w-4 h-4 shrink-0" />
-						<span>Tim Anda belum memiliki event. Tugas harus dikaitkan dengan sebuah event.</span>
+						<span>
+							Tim Anda belum memiliki event. Tugas harus dikaitkan dengan sebuah
+							event.
+						</span>
 					</div>
 					<Link
 						to="/team/$id/event/new"
@@ -204,7 +209,7 @@ function TasksPage() {
 
 			{/* Filters Bar */}
 			<div className="flex flex-wrap items-center gap-3 p-3 rounded-lg border bg-card">
-				<div className="flex-1 min-w-[200px]">
+				<div className="flex-1 min-w-50">
 					<Input
 						placeholder="Cari tugas berdasarkan judul atau deskripsi..."
 						value={searchQuery}
@@ -333,7 +338,10 @@ function TasksPage() {
 												to="/team/$id/task/$taskId/edit"
 												params={{ id, taskId: task.id }}
 												search={{ eventId: task.eventId }}
-												className={buttonVariants({ variant: 'outline', size: 'xs' })}
+												className={buttonVariants({
+													variant: 'outline',
+													size: 'xs'
+												})}
 											>
 												<PencilIcon className="w-3.5 h-3.5 mr-1" />
 												Edit

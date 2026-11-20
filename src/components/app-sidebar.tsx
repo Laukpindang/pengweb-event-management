@@ -1,5 +1,10 @@
 import type { LinkProps } from '@tanstack/react-router'
-import { Link, useMatchRoute, useNavigate, useParams } from '@tanstack/react-router'
+import {
+	Link,
+	useMatchRoute,
+	useNavigate,
+	useParams
+} from '@tanstack/react-router'
 import {
 	CalendarIcon,
 	CheckSquareIcon,
@@ -84,8 +89,12 @@ export function AppSidebar({
 							{user?.name?.charAt(0).toUpperCase() || 'U'}
 						</div>
 						<div className="truncate">
-							<p className="text-xs font-medium truncate">{user?.name || 'User'}</p>
-							<p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
+							<p className="text-xs font-medium truncate">
+								{user?.name || 'User'}
+							</p>
+							<p className="text-[10px] text-muted-foreground truncate">
+								{user?.email}
+							</p>
 						</div>
 					</div>
 					<button

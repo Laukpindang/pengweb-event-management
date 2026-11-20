@@ -61,16 +61,22 @@ function AddMemberPage() {
 					<div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-2">
 						<UserPlusIcon className="w-5 h-5" />
 					</div>
-					<CardTitle className="text-xl">Undang Anggota ke {team.name}</CardTitle>
+					<CardTitle className="text-xl">
+						Undang Anggota ke {team.name}
+					</CardTitle>
 					<CardDescription>
-						Ikuti petunjuk di bawah ini untuk menambahkan anggota baru ke dalam tim Anda.
+						Ikuti petunjuk di bawah ini untuk menambahkan anggota baru ke dalam
+						tim Anda.
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
 					<div className="space-y-3">
-						<h3 className="text-sm font-semibold">Langkah 1: Bagikan Team ID</h3>
+						<h3 className="text-sm font-semibold">
+							Langkah 1: Bagikan Team ID
+						</h3>
 						<p className="text-xs text-muted-foreground">
-							Kirimkan Team ID berikut kepada calon anggota yang ingin bergabung:
+							Kirimkan Team ID berikut kepada calon anggota yang ingin
+							bergabung:
 						</p>
 						<div className="flex items-center gap-2">
 							<div className="font-mono text-sm bg-muted border px-3 py-2 rounded-md font-semibold select-all flex-1 truncate">
@@ -84,12 +90,22 @@ function AddMemberPage() {
 					</div>
 
 					<div className="space-y-2 border-t pt-4">
-						<h3 className="text-sm font-semibold">Langkah 2: Calon Anggota Bergabung</h3>
+						<h3 className="text-sm font-semibold">
+							Langkah 2: Calon Anggota Bergabung
+						</h3>
 						<ol className="list-decimal list-inside text-xs text-muted-foreground space-y-1">
 							<li>Calon anggota melakukan registrasi dan masuk ke aplikasi.</li>
-							<li>Calon anggota membuka menu <strong>Gabung ke Tim</strong>.</li>
-							<li>Calon anggota menempelkan Team ID di atas dan klik <strong>Gabung Tim</strong>.</li>
-							<li>Calon anggota otomatis terdaftar sebagai anggota resmi tim {team.name}.</li>
+							<li>
+								Calon anggota membuka menu <strong>Gabung ke Tim</strong>.
+							</li>
+							<li>
+								Calon anggota menempelkan Team ID di atas dan klik{' '}
+								<strong>Gabung Tim</strong>.
+							</li>
+							<li>
+								Calon anggota otomatis terdaftar sebagai anggota resmi tim{' '}
+								{team.name}.
+							</li>
 						</ol>
 					</div>
 

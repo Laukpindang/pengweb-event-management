@@ -26,7 +26,6 @@ import type { Task, Team, TeamStats } from '@/types'
 export const Route = createFileRoute('/_authed/team/$id/')({
 	loader: async ({ params }) => {
 		try {
-			// Fetch team stats from new backend endpoint GET /teams/:id/stats
 			const [statsRes, teamRes] = await Promise.all([
 				apiClient.get<TeamStats>(`/teams/${params.id}/stats`),
 				apiClient.get<Team>(`/teams/${params.id}`)
@@ -35,7 +34,6 @@ export const Route = createFileRoute('/_authed/team/$id/')({
 			const statsData = statsRes.data
 			const team = teamRes.data
 
-			// Fetch tasks for each event in the team
 			const eventItems = statsData.events?.items || []
 			const taskPromises = eventItems.map(async (event) => {
 				try {
@@ -51,7 +49,6 @@ export const Route = createFileRoute('/_authed/team/$id/')({
 			const taskArrays = await Promise.all(taskPromises)
 			const allTeamTasks = taskArrays.flat()
 
-			// Compute aggregated team stats
 			let totalTasks = 0
 			let unassigned = 0
 			let inProgress = 0
@@ -170,7 +167,9 @@ function TeamDashboard() {
 								Total Tugas
 								<ListTodoIcon className="w-4 h-4 text-primary" />
 							</CardDescription>
-							<CardTitle className="text-3xl font-bold">{summary.totalTasks}</CardTitle>
+							<CardTitle className="text-3xl font-bold">
+								{summary.totalTasks}
+							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<p className="text-xs text-muted-foreground">
@@ -190,7 +189,9 @@ function TeamDashboard() {
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="text-xs text-muted-foreground">Menunggu alokasi anggota</p>
+							<p className="text-xs text-muted-foreground">
+								Menunggu alokasi anggota
+							</p>
 						</CardContent>
 					</Card>
 
@@ -205,7 +206,9 @@ function TeamDashboard() {
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="text-xs text-muted-foreground">Dalam tahap pengerjaan</p>
+							<p className="text-xs text-muted-foreground">
+								Dalam tahap pengerjaan
+							</p>
 						</CardContent>
 					</Card>
 
@@ -220,7 +223,9 @@ function TeamDashboard() {
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="text-xs text-muted-foreground">Tugas berhasil diselesaikan</p>
+							<p className="text-xs text-muted-foreground">
+								Tugas berhasil diselesaikan
+							</p>
 						</CardContent>
 					</Card>
 				</div>
@@ -249,7 +254,8 @@ function TeamDashboard() {
 						<CalendarIcon className="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
 						<h3 className="font-semibold text-lg">Belum Ada Event</h3>
 						<p className="text-sm text-muted-foreground max-w-md mx-auto mb-4">
-							Buat event pertama Anda untuk mengelompokkan tugas-tugas tim berdasarkan agenda kegiatan atau proyek.
+							Buat event pertama Anda untuk mengelompokkan tugas-tugas tim
+							berdasarkan agenda kegiatan atau proyek.
 						</p>
 						<Link
 							to="/team/$id/event/new"
@@ -278,13 +284,16 @@ function TeamDashboard() {
 										<div className="flex justify-between text-xs font-medium">
 											<span>Progress Tugas</span>
 											<span>
-												{event.tasks.completed}/{event.tasks.total} ({event.tasks.completionPercentage}%)
+												{event.tasks.completed}/{event.tasks.total} (
+												{event.tasks.completionPercentage}%)
 											</span>
 										</div>
 										<div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
 											<div
 												className="h-full bg-primary transition-all duration-300"
-												style={{ width: `${event.tasks.completionPercentage}%` }}
+												style={{
+													width: `${event.tasks.completionPercentage}%`
+												}}
 											/>
 										</div>
 									</div>
@@ -318,7 +327,8 @@ function TeamDashboard() {
 						<ListTodoIcon className="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
 						<h3 className="font-semibold text-lg">Belum Ada Tugas</h3>
 						<p className="text-sm text-muted-foreground max-w-md mx-auto mb-4">
-							Tambahkan tugas ke event yang sudah dibuat agar anggota tim dapat mulai bekerja.
+							Tambahkan tugas ke event yang sudah dibuat agar anggota tim dapat
+							mulai bekerja.
 						</p>
 						<Link
 							to="/team/$id/task/new"
@@ -344,7 +354,8 @@ function TeamDashboard() {
 								</div>
 								<div className="flex items-center gap-3 shrink-0">
 									<span className="text-xs text-muted-foreground">
-										Deadline: {new Date(task.dueDate).toLocaleDateString('id-ID')}
+										Deadline:{' '}
+										{new Date(task.dueDate).toLocaleDateString('id-ID')}
 									</span>
 									<span
 										className={`text-xs px-2 py-0.5 rounded-full font-medium ${
@@ -365,7 +376,10 @@ function TeamDashboard() {
 										to="/team/$id/task/$taskId/edit"
 										params={{ id, taskId: task.id }}
 										search={{ eventId: task.eventId }}
-										className={buttonVariants({ variant: 'outline', size: 'xs' })}
+										className={buttonVariants({
+											variant: 'outline',
+											size: 'xs'
+										})}
 									>
 										Edit
 									</Link>

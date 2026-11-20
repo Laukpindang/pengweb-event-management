@@ -16,7 +16,7 @@ export const CreateTaskSchema = z.object({
 
 export const UpdateTaskSchema = z.object({
 	status: z.enum(['UNASSIGNED', 'IN_PROGRESS', 'COMPLETED']),
-	assigneeId: z.string().optional()
+	assigneeId: z.string().nullable()
 })
 
 export const EditTaskSchema = UpdateTaskSchema

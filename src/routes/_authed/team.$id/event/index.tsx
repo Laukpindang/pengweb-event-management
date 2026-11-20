@@ -4,11 +4,7 @@ import { CalendarIcon, PlusIcon, Trash2Icon } from 'lucide-react'
 import { useState } from 'react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
-import {
-	Card,
-	CardDescription,
-	CardTitle
-} from '@/components/ui/card'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import {
 	Table,
 	TableBody,
@@ -28,7 +24,6 @@ export const Route = createFileRoute('/_authed/team/$id/event/')({
 				`/teams/${params.id}/events`
 			)
 
-			// Fetch tasks for each event from new endpoint /events/:eventId/tasks
 			const eventsWithTasks = await Promise.all(
 				(events || []).map(async (event) => {
 					try {
@@ -105,7 +100,9 @@ function EventsPage() {
 		<div className="space-y-6">
 			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 				<div>
-					<h1 className="text-2xl font-bold tracking-tight">Daftar Event Tim</h1>
+					<h1 className="text-2xl font-bold tracking-tight">
+						Daftar Event Tim
+					</h1>
 					<p className="text-muted-foreground text-sm">
 						Kelola semua event, milestone, dan agenda kegiatan tim Anda
 					</p>
@@ -125,7 +122,8 @@ function EventsPage() {
 					<CalendarIcon className="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
 					<CardTitle className="text-lg">Belum Ada Event</CardTitle>
 					<CardDescription className="max-w-md mx-auto mt-1 mb-4">
-						Event diperlukan sebagai wadah pengelompokan tugas dan aktivitas tim.
+						Event diperlukan sebagai wadah pengelompokan tugas dan aktivitas
+						tim.
 					</CardDescription>
 					<Link
 						to="/team/$id/event/new"

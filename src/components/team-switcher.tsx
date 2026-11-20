@@ -1,5 +1,10 @@
 import { useNavigate, useParams } from '@tanstack/react-router'
-import { CheckIcon, ChevronsUpDownIcon, PlusIcon, UserPlusIcon } from 'lucide-react'
+import {
+	CheckIcon,
+	ChevronsUpDownIcon,
+	PlusIcon,
+	UserPlusIcon
+} from 'lucide-react'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -16,11 +21,7 @@ import {
 } from '@/components/ui/sidebar'
 import type { Team } from '@/types'
 
-export function TeamSwitcher({
-	teams
-}: {
-	teams: Team[]
-}) {
+export function TeamSwitcher({ teams }: { teams: Team[] }) {
 	const params = useParams({ strict: false }) as { id?: string }
 	const navigate = useNavigate()
 	const currentTeamId = params.id
@@ -67,7 +68,9 @@ export function TeamSwitcher({
 							{teams.map((team) => (
 								<DropdownMenuItem
 									key={team.id}
-									onClick={() => navigate({ to: '/team/$id', params: { id: team.id } })}
+									onClick={() =>
+										navigate({ to: '/team/$id', params: { id: team.id } })
+									}
 									className="gap-2 p-2 cursor-pointer"
 								>
 									<div className="flex size-6 items-center justify-center rounded-sm border bg-muted text-xs font-medium">
@@ -105,7 +108,9 @@ export function TeamSwitcher({
 								<div className="flex size-6 items-center justify-center rounded-md border bg-background">
 									<UserPlusIcon className="size-4 text-primary" />
 								</div>
-								<div className="font-medium text-foreground">Gabung Tim Lain</div>
+								<div className="font-medium text-foreground">
+									Gabung Tim Lain
+								</div>
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 					</DropdownMenuContent>

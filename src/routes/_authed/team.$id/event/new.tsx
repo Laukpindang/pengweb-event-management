@@ -87,7 +87,8 @@ function CreateEventPage() {
 				<CardHeader>
 					<CardTitle className="text-xl">Buat Event Baru</CardTitle>
 					<CardDescription>
-						Tentukan judul, deskripsi, dan rentang waktu pelaksanaan event atau milestone kegiatan.
+						Tentukan judul, deskripsi, dan rentang waktu pelaksanaan event atau
+						milestone kegiatan.
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -128,7 +129,9 @@ function CreateEventPage() {
 										field.state.meta.isTouched && !field.state.meta.isValid
 									return (
 										<Field data-invalid={isInvalid}>
-											<FieldLabel htmlFor={field.name}>Deskripsi Event</FieldLabel>
+											<FieldLabel htmlFor={field.name}>
+												Deskripsi Event
+											</FieldLabel>
 											<Textarea
 												id={field.name}
 												name={field.name}
@@ -154,7 +157,9 @@ function CreateEventPage() {
 											field.state.meta.isTouched && !field.state.meta.isValid
 										return (
 											<Field data-invalid={isInvalid}>
-												<FieldLabel htmlFor={field.name}>Waktu Mulai</FieldLabel>
+												<FieldLabel htmlFor={field.name}>
+													Waktu Mulai
+												</FieldLabel>
 												<Input
 													id={field.name}
 													name={field.name}
@@ -178,7 +183,9 @@ function CreateEventPage() {
 											field.state.meta.isTouched && !field.state.meta.isValid
 										return (
 											<Field data-invalid={isInvalid}>
-												<FieldLabel htmlFor={field.name}>Waktu Selesai</FieldLabel>
+												<FieldLabel htmlFor={field.name}>
+													Waktu Selesai
+												</FieldLabel>
 												<Input
 													id={field.name}
 													name={field.name}

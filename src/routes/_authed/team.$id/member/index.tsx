@@ -69,7 +69,11 @@ function MembersPage() {
 	}
 
 	const handleRemoveMember = async (memberId: string, memberName: string) => {
-		if (!window.confirm(`Apakah Anda yakin ingin mengeluarkan ${memberName} dari tim?`)) {
+		if (
+			!window.confirm(
+				`Apakah Anda yakin ingin mengeluarkan ${memberName} dari tim?`
+			)
+		) {
 			return
 		}
 
@@ -124,7 +128,8 @@ function MembersPage() {
 						Undang Rekan ke Tim Ini
 					</CardTitle>
 					<CardDescription>
-						Bagikan Team ID di bawah ini kepada rekan kerja Anda. Mereka dapat memasukkan ID ini di menu &quot;Gabung Tim&quot; setelah login.
+						Bagikan Team ID di bawah ini kepada rekan kerja Anda. Mereka dapat
+						memasukkan ID ini di menu &quot;Gabung Tim&quot; setelah login.
 					</CardDescription>
 				</CardHeader>
 				<CardContent>

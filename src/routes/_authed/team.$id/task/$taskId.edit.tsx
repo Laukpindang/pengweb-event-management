@@ -1,7 +1,7 @@
 import { useForm } from '@tanstack/react-form'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { isAxiosError } from 'axios'
-import { ArrowLeftIcon, CalendarIcon, Trash2Icon, UserIcon } from 'lucide-react'
+import { ArrowLeftIcon, Trash2Icon } from 'lucide-react'
 import { useState } from 'react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -27,7 +27,8 @@ export const Route = createFileRoute('/_authed/team/$id/task/$taskId/edit')({
 	validateSearch: (search: Record<string, unknown>) => ({
 		eventId: typeof search.eventId === 'string' ? search.eventId : undefined
 	}),
-	loader: async ({ params, search }) => {
+	loaderDeps: ({ search }) => search,
+	loader: async ({ params, deps }) => {
 		try {
 			const [eventsRes, membersRes] = await Promise.all([
 				apiClient.get<Event[]>(`/teams/${params.id}/events`),
@@ -39,19 +40,15 @@ export const Route = createFileRoute('/_authed/team/$id/task/$taskId/edit')({
 
 			let targetTask: Task | null = null
 
-			// If eventId search param is present, fetch task directly
-			if (search.eventId) {
+			if (deps.eventId) {
 				try {
 					const { data: task } = await apiClient.get<Task>(
-						`/events/${search.eventId}/tasks/${params.taskId}`
+						`/events/${deps.eventId}/tasks/${params.taskId}`
 					)
 					targetTask = task
-				} catch {
-					// Fallback to searching events
-				}
+				} catch {}
 			}
 
-			// If not found yet, search in all events of this team
 			if (!targetTask) {
 				for (const event of events) {
 					try {
@@ -62,9 +59,7 @@ export const Route = createFileRoute('/_authed/team/$id/task/$taskId/edit')({
 							targetTask = task
 							break
 						}
-					} catch {
-						// continue search
-					}
+					} catch {}
 				}
 			}
 
@@ -100,11 +95,10 @@ function EditTaskPage() {
 		},
 		defaultValues: {
 			status: task.status,
-			assigneeId: task.assigneeId || ''
+			assigneeId: task.assigneeId
 		},
 		onSubmit: async ({ value }) => {
 			try {
-				// Backend UpdateTaskDto only accepts status and optional assigneeId
 				await apiClient.patch(`/events/${task.eventId}/tasks/${taskId}`, {
 					status: value.status,
 					assigneeId: value.assigneeId ? value.assigneeId : undefined
@@ -131,7 +125,11 @@ function EditTaskPage() {
 	})
 
 	const handleDelete = async () => {
-		if (!window.confirm(`Apakah Anda yakin ingin menghapus tugas "${task.title}"?`)) {
+		if (
+			!window.confirm(
+				`Apakah Anda yakin ingin menghapus tugas "${task.title}"?`
+			)
+		) {
 			return
 		}
 
@@ -202,7 +200,9 @@ function EditTaskPage() {
 							<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
 								Deskripsi
 							</span>
-							<p className="text-sm text-muted-foreground mt-0.5">{task.description}</p>
+							<p className="text-sm text-muted-foreground mt-0.5">
+								{task.description}
+							</p>
 						</div>
 
 						<div className="grid grid-cols-2 gap-4 pt-2 border-t text-xs">
@@ -236,21 +236,30 @@ function EditTaskPage() {
 										field.state.meta.isTouched && !field.state.meta.isValid
 									return (
 										<Field data-invalid={isInvalid}>
-											<FieldLabel htmlFor={field.name}>Status Pengerjaan</FieldLabel>
+											<FieldLabel htmlFor={field.name}>
+												Status Pengerjaan
+											</FieldLabel>
 											<select
 												id={field.name}
 												name={field.name}
 												value={field.state.value}
 												onChange={(e) =>
 													field.handleChange(
-														e.target.value as 'UNASSIGNED' | 'IN_PROGRESS' | 'COMPLETED'
+														e.target.value as
+															| 'UNASSIGNED'
+															| 'IN_PROGRESS'
+															| 'COMPLETED'
 													)
 												}
 												onBlur={field.handleBlur}
 												className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 											>
-												<option value="UNASSIGNED">Belum Ditugaskan (UNASSIGNED)</option>
-												<option value="IN_PROGRESS">Sedang Berjalan (IN_PROGRESS)</option>
+												<option value="UNASSIGNED">
+													Belum Ditugaskan (UNASSIGNED)
+												</option>
+												<option value="IN_PROGRESS">
+													Sedang Berjalan (IN_PROGRESS)
+												</option>
 												<option value="COMPLETED">Selesai (COMPLETED)</option>
 											</select>
 											{isInvalid && (
@@ -264,7 +273,9 @@ function EditTaskPage() {
 							<form.Field name="assigneeId">
 								{(field) => (
 									<Field>
-										<FieldLabel htmlFor={field.name}>Tugaskan Kepada Anggota</FieldLabel>
+										<FieldLabel htmlFor={field.name}>
+											Tugaskan Kepada Anggota
+										</FieldLabel>
 										<select
 											id={field.name}
 											name={field.name}

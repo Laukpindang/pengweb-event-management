@@ -17,9 +17,12 @@ function OnboardPage() {
 	return (
 		<div className="flex flex-col items-center justify-center min-h-[70vh] px-4">
 			<div className="text-center mb-8 max-w-lg">
-				<h1 className="text-3xl font-bold tracking-tight">Selamat Datang di Team Management</h1>
+				<h1 className="text-3xl font-bold tracking-tight">
+					Selamat Datang di Team Management
+				</h1>
 				<p className="text-muted-foreground mt-2">
-					Untuk memulai kolaborasi tim, Anda dapat membuat tim baru atau bergabung ke tim yang sudah ada menggunakan Team ID.
+					Untuk memulai kolaborasi tim, Anda dapat membuat tim baru atau
+					bergabung ke tim yang sudah ada menggunakan Team ID.
 				</p>
 			</div>
 
@@ -31,11 +34,15 @@ function OnboardPage() {
 						</div>
 						<CardTitle>Buat Tim Baru</CardTitle>
 						<CardDescription>
-							Buat ruang kerja tim baru sebagai Owner, atur event, dan kelola tugas tim Anda.
+							Buat ruang kerja tim baru sebagai Owner, atur event, dan kelola
+							tugas tim Anda.
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<Link to="/onboard/setup" className={`w-full ${buttonVariants({ variant: 'default' })}`}>
+						<Link
+							to="/onboard/setup"
+							className={`w-full ${buttonVariants({ variant: 'default' })}`}
+						>
 							Buat Tim
 						</Link>
 					</CardContent>
@@ -48,11 +55,15 @@ function OnboardPage() {
 						</div>
 						<CardTitle>Gabung ke Tim</CardTitle>
 						<CardDescription>
-							Masukkan ID Tim yang dibagikan oleh ketua tim Anda untuk mulai berkolaborasi.
+							Masukkan ID Tim yang dibagikan oleh ketua tim Anda untuk mulai
+							berkolaborasi.
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<Link to="/onboard/join" className={`w-full ${buttonVariants({ variant: 'outline' })}`}>
+						<Link
+							to="/onboard/join"
+							className={`w-full ${buttonVariants({ variant: 'outline' })}`}
+						>
 							Gabung dengan ID
 						</Link>
 					</CardContent>
